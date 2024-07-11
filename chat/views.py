@@ -16,5 +16,6 @@ class ChatRoomCreateAPIView(APIView):
             # 채팅방 생성
             chat_room = serializer.save()
             chat_room.members.add(request.user)  # 방 생성자를 자동으로 멤버에 추가
+            chat_room.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
