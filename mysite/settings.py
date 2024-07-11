@@ -75,13 +75,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 인증된 사용자만 접근
+		'rest_framework.permissions.IsAuthenticated',
+		# 관리자만 접근
+		'rest_framework.permissions.IsAdminUser',
+		# 누구나 접근
+		'rest_framework.permissions.AllowAny',
     )
 }
 
+# jwt token 설정
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1)
+}
+
+
 ASGI_APPLICATION = 'mysite.asgi.application'
+
 # Redis를 채널 레이어로 사용하는 기본 설정 예
 CHANNEL_LAYERS = {
     'default': {
@@ -129,9 +145,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
