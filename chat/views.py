@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -53,11 +54,16 @@ class AddMemberAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-    def post(self, request, room_id):
-        try:
-            chat_room = ChatRoom.objects.get(id=room_id)
-        except ChatRoom.DoesNotExist:
-            return Response({"message": "Chat room not found"}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request):
+        room_name = request.query_params.get('room_name')
+        if not room_name:
+            return Response({
+                "message": "The Room name parameter is missing"
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+        chat_room = get_object_or_404(ChatRoom, name=room_name)
 
         serializer = AddMemberSerializer(data=request.data, instance=chat_room)
         if serializer.is_valid():
