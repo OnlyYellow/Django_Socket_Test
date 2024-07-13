@@ -14,6 +14,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             room_name = query_string.get('room_name', [None])[0]
 
             if room_name is None:
+                print("no room name")
                 await self.close()
                 return
             
@@ -33,22 +34,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         else:
             await self.close()
 
-    @database_sync_to_async
-    def get_room(self, room_name):
-        try:
-            return ChatRoom.objects.get(name=room_name)
-        except ChatRoom.DoesNotExist:
-            return None
-        
-    @database_sync_to_async
-    def is_room_member(self, room, user):
-        return user in room.members.all()
-
     async def disconnect(self, close_code):
         # Leave room group
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
+        if self.room_group_name:
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
         )
 
     # Receive message from WebSocket
@@ -77,3 +68,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'email': email,
             'message': message
         }))
+
+    @database_sync_to_async
+    def get_room(self, room_name):
+        try:
+            return ChatRoom.objects.get(name=room_name)
+        except ChatRoom.DoesNotExist:
+            return None
+        
+    @database_sync_to_async
+    def is_room_member(self, room, user):
+        return user in room.members.all()
