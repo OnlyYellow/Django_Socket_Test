@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -99,12 +100,14 @@ SIMPLE_JWT = {
 
 ASGI_APPLICATION = 'mysite.asgi.application'
 
-# Redis를 채널 레이어로 사용하는 기본 설정 예
+# Redis를 채널 레이어로 사용하는 기본 설정
+REDIS_PASSWORD = config('REDIS_PASSWORD')
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [('127.0.0.1', 6379)],
+            "password": REDIS_PASSWORD
         },
     },
 }
